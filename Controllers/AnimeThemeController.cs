@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AnimeTheme.Service.Data;
 using AnimeTheme.Service.Models;
 using AnimeTheme.Service.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AnimeTheme.Service.Controllers
@@ -19,84 +16,53 @@ namespace AnimeTheme.Service.Controllers
        
 
         private readonly ILogger<AnimeThemeController> _logger;
-        private readonly DatabaseSeeder _client;
-        private readonly AnimeThemesContext _context;
+        private readonly IAnimeThemeService _animeThemeService;
+        private readonly AnimeMapper _animeMapper;
+        private readonly ArtistMapper _artistMapper;
 
-        public AnimeThemeController(ILogger<AnimeThemeController> logger, AnimeThemesContext context, DatabaseSeeder client)
+        public AnimeThemeController(ILogger<AnimeThemeController> logger, IAnimeThemeService animeThemeService, ModelMapperFactory mapperFactory)
         {
             _logger = logger;
-            _client = client;
-            _context = context;
+            _animeThemeService = animeThemeService;
+            
+            _artistMapper = mapperFactory.GetArtistMapper();
+            _animeMapper = mapperFactory.GetAnimeMapper();
         }
 
         [HttpGet]
         public async Task<IEnumerable<Video>> Get()
         {
-            return await _context.Videos.Take(10).ToListAsync();
-        }
-        
-        [HttpGet("SeedAllDatabases")]
-        public async Task<bool> SeedAllDatabasesGet()
-        {
-            await _client.Run();
-            return true;
+            return await _animeThemeService.GetVideosAsync();
         }
 
-        
         [HttpGet("Artist/{slug?}")]
         public async Task<Artist> ArtistPathGet(string slug)
         {
-            var artist = await _context.Artists
-                .AsSingleQuery()
-                .Include(c=>c.Songs)
-                .Include(c=>c.Resource)
-                .FirstAsync(c => c.Slug == slug);
-            return artist.ShallowClone();
+            var artist = await _animeThemeService.GetArtistBySlugAsync(slug);
+            return _artistMapper.Get(artist);
         }
         
 
         [HttpGet("Anime/{slug?}")]
         public async Task<Anime> AnimePathGet(string slug)
         {
-            var anime = await _context.Animes
-                .AsSingleQuery()
-                .Include(c=>c.Synonyms)
-                .Include(c=>c.Resource)
-                .Include(c=>c.Themes)
-                .Include(c=>c.Series)
-                .FirstAsync(c => c.Slug == slug);
-            return anime.ShallowClone();
+            var anime = await _animeThemeService.GetAnimeBySlugAsync(slug);
+            return _animeMapper.Get(anime);
         }
         
         
         [HttpGet("Anime")]
         public async Task<Anime> AnimeGet(string name)
         {
-            var anime = await _context.Animes
-                .AsSingleQuery()
-                .Include(c=>c.Synonyms)
-                .Include(c=>c.Resource)
-                .Include(c=>c.Themes)
-                .ThenInclude(c=>c.Song)
-                .Include(c=>c.Series)
-                .FirstAsync(c => c.Name == name || c.Slug == name || c.Synonyms.Any(p=>p.Text == name));
-
-            return anime.ShallowClone();
+            var anime = await _animeThemeService.GetAnimeByNameAsync(name);
+            return _animeMapper.Get(anime);
         }
 
         [HttpGet("Anime/Random")]
         public async Task<IEnumerable<Anime>> RandomAnimeGet(int count = 1)
         {
-            var randomList = await _context.Animes
-                .AsSingleQuery()
-                .Include(c=>c.Synonyms)
-                .Include(c=>c.Resource)
-                .Include(c=>c.Themes)
-                .Include(c=>c.Series)
-                .OrderBy(c => Guid.NewGuid())
-                .Take(count).ToListAsync();
-
-            return randomList.ConvertAll(c=>c.ShallowClone());
+            var randomList = await _animeThemeService.GetRandomAnimesAsync(count);
+            return _animeMapper.Get(randomList);
         }
     }
 }

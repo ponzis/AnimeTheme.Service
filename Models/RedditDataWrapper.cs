@@ -32,6 +32,7 @@ namespace AnimeTheme.Service.Models
             writer.WriteStringValue(value);
         }
     }
+    
     public class UnixTimeConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(
@@ -52,7 +53,8 @@ namespace AnimeTheme.Service.Models
             DateTime dateTimeValue,
             JsonSerializerOptions options)
         {
-            writer.WriteStringValue(dateTimeValue);
+            var seconds = (long)(dateTimeValue.ToUniversalTime() - DateTime.UnixEpoch).TotalSeconds;
+            writer.WriteNumberValue(seconds);
         }
     }
     

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimeTheme.Service.Models;
-using AnimeTheme.Service.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +17,7 @@ namespace AnimeTheme.Service.Data
         
         public DbSet<ExternalResource> Resources { get; init; }
 
-        public DbSet<AnimeSynonym> Synonyms { get; init; }
+        public DbSet<Synonym> Synonyms { get; init; }
         
         public DbSet<Theme> Themes { get; init; }
         
@@ -45,7 +44,7 @@ namespace AnimeTheme.Service.Data
             modelBuilder.ApplyConfiguration(new Video.Config());
             modelBuilder.ApplyConfiguration(new Anime.Config());
             modelBuilder.ApplyConfiguration(new ExternalResource.Config());
-            modelBuilder.ApplyConfiguration(new AnimeSynonym.Config());
+            modelBuilder.ApplyConfiguration(new Synonym.Config());
             modelBuilder.ApplyConfiguration(new Theme.Config());
             modelBuilder.ApplyConfiguration(new Entry.Config());
             modelBuilder.ApplyConfiguration(new Song.Config());

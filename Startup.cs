@@ -1,7 +1,8 @@
-
-
+using System.Text.Json.Serialization;
 using AnimeTheme.Service.Data;
+using AnimeTheme.Service.Models;
 using AnimeTheme.Service.Services;
+using AnimeTheme.Service.Services.Seeders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,21 +27,15 @@ namespace AnimeTheme.Service
         {
 
             services.AddDbContext<AnimeThemesContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
             services.AddDatabaseDeveloperPageExceptionFilter();
             
             services.AddHttpClient();
 
-            services.AddTransient<DatabaseSeeder>();
-            
-            services.AddTransient<VideoTagsSeeder>();
-            services.AddTransient<AnimeSeeder>();
-            services.AddTransient<AnimeResourceSeeder>();
-            services.AddTransient<AnimeSeasonSeeder>();
-            services.AddTransient<AnimeThemeSeeder>();
-            services.AddTransient<ArtistSeeder>();
-            services.AddTransient<ArtistSongSeeder>();
-            services.AddTransient<SeriesSeeder>();
+            services.AddScoped<IAnimeThemeService, AnimeThemeService>();
+            services.AddDatabaseSeeder();
+            services.AddModelMappers();
+            // services.AddHostedService<Worker>();
             
             services.AddControllers().AddJsonOptions(options =>
             {

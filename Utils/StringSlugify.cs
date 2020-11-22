@@ -1,10 +1,12 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AnimeTheme.Service.Utils
 {
-    public static class StringSlugify
+    public static class StringSlugifyExtensions
     {
         public static string GenerateSlug(this string phrase, string symbol = "-") 
         { 

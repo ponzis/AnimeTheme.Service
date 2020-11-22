@@ -11,11 +11,11 @@ namespace AnimeTheme.Service.Models
         {
             builder.Property<DateTime>("InsertDateTime")
                 .IsRequired()
-                .HasDefaultValueSql("SYSUTCDATETIME()")
+                .HasDefaultValue(DateTime.UtcNow)
                 .ValueGeneratedOnAdd();
             builder.Property<DateTime>("UpdateDateTime")
                 .IsRequired()
-                .HasDefaultValueSql("SYSUTCDATETIME()")
+                .HasDefaultValue(DateTime.UtcNow)
                 .ValueGeneratedOnAdd();
         }
     }

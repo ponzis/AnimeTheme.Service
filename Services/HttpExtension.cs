@@ -4,11 +4,12 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace AnimeTheme.Service.Services
 {
     public static class HttpExtension
     {
-        public static async Task<T> GetJsonObject<T>(this HttpClient client, Uri uri,
+        public static async Task<T> GetJsonObjectAsync<T>(this HttpClient client, Uri uri,
             CancellationToken cancellationToken = default)
         {
             var resp = await client.GetAsync(uri, cancellationToken);
